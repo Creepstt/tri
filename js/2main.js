@@ -191,14 +191,12 @@ function initCalculator() {
     });
 }
 
-
-
-
 // ===== YANDEX MAP =====
 function initMap() {
     const mapElement = document.getElementById('map');
     if (!mapElement) return;
     
+    // Если Яндекс.Карты загружены
     if (typeof ymaps !== 'undefined') {
         ymaps.ready(() => {
             const map = new ymaps.Map('map', {
@@ -206,125 +204,17 @@ function initMap() {
                 zoom: 9,
                 controls: ['zoomControl', 'fullscreenControl']
             });
-
-            // Зоны обслуживания
-            const centralZone = new ymaps.Circle([
-                [55.755864, 37.617698], // Центр Москвы
-                15000 // 15 км
-            ], {
-                hintContent: 'Экспресс-зона',
-                balloonContent: 'Доставка в течение 2-3 часов<br>Минимальный тариф',
-            }, {
-                fillColor: '#2ecc7180',
-                strokeColor: '#27ae60',
-                strokeWidth: 2,
-                strokeOpacity: 0.9,
-                fillOpacity: 0.4
+            
+            // Добавляем маркер
+            const placemark = new ymaps.Placemark([55.755864, 37.617698], {
+                hintContent: 'Наша база',
+                balloonContent: 'Центральный офис'
             });
-
-            const innerZone = new ymaps.Circle([
-                [55.755864, 37.617698],
-                30000 // 30 км
-            ], {
-                hintContent: 'Стандартная зона',
-                balloonContent: 'Доставка в течение 4-6 часов<br>Стандартный тариф',
-            }, {
-                fillColor: '#3498db80',
-                strokeColor: '#2980b9',
-                strokeWidth: 2,
-                strokeOpacity: 0.9,
-                fillOpacity: 0.3
-            });
-
-            const outerZone = new ymaps.Circle([
-                [55.755864, 37.617698],
-                60000 // 60 км
-            ], {
-                hintContent: 'Пригородная зона',
-                balloonContent: 'Доставка на следующий день<br>Повышенный тариф',
-            }, {
-                fillColor: '#e74c3c80',
-                strokeColor: '#c0392b',
-                strokeWidth: 2,
-                strokeOpacity: 0.9,
-                fillOpacity: 0.2
-            });
-
-            // Офис и склад
-            const mainOffice = new ymaps.Placemark([55.755864, 37.617698], {
-                hintContent: 'Главный офис',
-                balloonContentHeader: 'Центральный офис HD78',
-                balloonContentBody: 
-                    '<strong>Адрес:</strong> г. Москва, ул. Транспортная, 10<br>' +
-                    '<strong>Телефон:</strong> +7 (925) 123-45-67<br>' +
-                    '<strong>Режим работы:</strong><br>' +
-                    'Пн-Пт: 9:00 - 20:00<br>' +
-                    'Сб-Вс: 10:00 - 18:00',
-                balloonContentFooter: '<a href="#contacts">Связаться с нами</a>'
-            }, {
-                preset: 'islands#blueHomeCircleIcon'
-            });
-
-            const warehouse = new ymaps.Placemark([55.751244, 37.618423], {
-                hintContent: 'Склад',
-                balloonContentHeader: 'Складской комплекс',
-                balloonContentBody: 'Круглосуточный прием и отправка грузов',
-                balloonContentFooter: 'Доступен для самовывоза'
-            }, {
-                preset: 'islands#darkGreenWarehouseIcon'
-            });
-
-            // Добавляем легенду на карту
-            const legend = new ymaps.control.ListBox({
-                data: {
-                    content: 'Зоны доставки'
-                },
-                items: [
-                    new ymaps.control.ListBoxItem({
-                        data: {
-                            content: 'Экспресс-зона (2-3 часа)'
-                        },
-                        options: {
-                            selectOnClick: false
-                        }
-                    }),
-                    new ymaps.control.ListBoxItem({
-                        data: {
-                            content: 'Стандартная зона (4-6 часов)'
-                        },
-                        options: {
-                            selectOnClick: false
-                        }
-                    }),
-                    new ymaps.control.ListBoxItem({
-                        data: {
-                            content: 'Пригородная зона (24 часа)'
-                        },
-                        options: {
-                            selectOnClick: false
-                        }
-                    })
-                ]
-            });
-
-            // Добавляем все объекты на карту
-            map.controls.add(legend);
-            map.geoObjects
-                .add(outerZone)
-                .add(innerZone)
-                .add(centralZone)
-                .add(mainOffice)
-                .add(warehouse);
-
-            // Устанавливаем границы отображения
-            map.setBounds(outerZone.geometry.getBounds(), {
-                checkZoomRange: true,
-                duration: 300
-            }).then(() => {
-                map.setZoom(map.getZoom() - 0.5);
-            });
+            
+            map.geoObjects.add(placemark);
         });
     } else {
+        // Если Яндекс.Карты не загружены, добавляем заглушку
         mapElement.innerHTML = '<div class="map-placeholder">Карта временно недоступна</div>';
     }
 }
